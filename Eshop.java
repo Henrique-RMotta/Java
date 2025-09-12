@@ -13,16 +13,15 @@ import Produto.Produto;
  */
 public class Eshop {
     public static void main(String[] args) {
-        Produto banana = new Produto();//"banana",2,"prata");
-        Produto feijao = new Produto(); 
+        Produto feijao = new Produto("1010"); 
         feijao.setNome("Feijao");
         feijao.setPreco(10);
-        feijao.setDescricao("Preto");
+        feijao.setSaldo((float)10);
         
         System.out.println("Produto:"
-        +banana.getNome()
-        +banana.getPreco()
-        +banana.getDescricao());
+            +feijao.getNome()
+            +feijao.getPreco()
+            +feijao.getCodigo());
     }
 }
 
