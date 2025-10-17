@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package edu.senai.henriquemotta.simuladorrpg.classes;
+import edu.senai.henriquemotta.simuladorrpg.model.EquipamentoEnum;
 import edu.senai.henriquemotta.simuladorrpg.model.TipoEquipamento;
 import java.util.List;
 /**
@@ -102,7 +103,7 @@ public class Jogador {
     public void setNivel(int nivel) {
         this.nivel = nivel;
     }
-    
+
     
     
 }

@@ -4,10 +4,17 @@
  */
 package edu.senai.henriquemotta.simuladorrpg;
 
+import edu.senai.henriquemotta.simuladorrpg.classes.Equipamento;
 import edu.senai.henriquemotta.simuladorrpg.model.EquipamentoEnum;
 import edu.senai.henriquemotta.simuladorrpg.model.MonstroEnum;
 import edu.senai.henriquemotta.simuladorrpg.classes.Jogador;
-
+import edu.senai.henriquemotta.simuladorrpg.classes.Monstro;
+import edu.senai.henriquemotta.simuladorrpg.service.EquipamentoService;
+import edu.senai.henriquemotta.simuladorrpg.service.MonstroService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+        
 /**
  *
  * @author Guilherme
@@ -19,26 +26,37 @@ public class SimuladorRPG extends javax.swing.JFrame {
     /**
      * Creates new form Principal
      */
+    public Jogador jogador;
+    public ArrayList<Equipamento> equipamentos; 
+    public ArrayList<Monstro> monstros;
     public SimuladorRPG() {
+        jogador = new Jogador();
+        jogador.setNivel(5);
+        
+        equipamentos = (ArrayList<Equipamento>) EquipamentoService.ObterEquipamentos();
+        monstros = (ArrayList<Monstro>) MonstroService.ObterMonstros();
         initComponents();
         
-                // Pega um monstro específico do enum
-        MonstroEnum monstroDaVez = MonstroEnum.ORC_DE_TELEMARKETING;
+        Random r = new Random();
+        
+// Pega um monstro específico do enum
+        Monstro m = monstros.get(r.nextInt(0,monstros.size()));
 
         // Pega um equipamento
-        EquipamentoEnum arma = EquipamentoEnum.MOTOSSERRA_DA_EVISCERACAO_SANGRENTA;
-        EquipamentoEnum armadura = EquipamentoEnum.ARMADURA_DE_COURO_FALSO;
+       // EquipamentoEnum arma = EquipamentoEnum.MOTOSSERRA_DA_EVISCERACAO_SANGRENTA;
+       // EquipamentoEnum armadura = EquipamentoEnum.ARMADURA_DE_COURO_FALSO;
 
         // Simula o status do jogador
-        int nivelJogador = 5;
-        int forcaJogador = nivelJogador + arma.getBonus() + armadura.getBonus();
-
-        System.out.println("Você (Nível " + nivelJogador + ") chuta a porta!");
-        System.out.println("Aparece um " + monstroDaVez.getNome() + " de Nível " + monstroDaVez.getNivel() + "!");
-        System.out.println("Sua força de combate total é: " + forcaJogador);
-        System.out.println("A força do monstro é: " + monstroDaVez.getNivel());
         
-        if (forcaJogador > monstroDaVez.getNivel()) {
+        
+        //int forcaJogador = jogador.getNivel() + arma.getBonus() + armadura.getBonus();
+
+        System.out.println("Você (Nível " + jogador.getNivel() + ") chuta a porta!");
+        System.out.println("Aparece um " + m.getNome() + " de Nível " + m.getNivel() + "!");
+        System.out.println("Sua força de combate total é: "  + jogador.getNivel());//
+        System.out.println("A força do monstro é: " + m.getNivel());
+        
+       if (jogador.getNivel() > m.getNivel()) {
             System.out.println("\nVITÓRIA! Você derrotou o monstro e pegou o tesouro!");
         } else {
             System.out.println("\nDERROTA! Você precisa fugir para não sofrer coisas ruins!");
