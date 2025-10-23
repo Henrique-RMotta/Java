@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package edu.senai.henriquemotta.simuladorrpg.classes;
-import edu.senai.henriquemotta.simuladorrpg.model.EquipamentoEnum;
 import edu.senai.henriquemotta.simuladorrpg.model.TipoEquipamento;
 import java.util.List;
 /**
@@ -104,6 +103,14 @@ public class Jogador {
         this.nivel = nivel;
     }
 
+    public String infoJogador() {
+       return this.getNome() +  " Nível: " + this.getNivel()+ " Poder: " + this.getPoder();
+    }
     
-    
+    public int setPoder() {
+        return  this.getNivel() + this.getArmadura().getBonus() + this.getMao().getBonus();
+    }
+    public int getPoder() {
+        return this.setPoder();
+    }
 }

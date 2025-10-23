@@ -14,55 +14,69 @@ import edu.senai.henriquemotta.simuladorrpg.service.MonstroService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import javax.swing.DefaultListModel;
         
-/**
- *
- * @author Guilherme
- */
+
 public class SimuladorRPG extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SimuladorRPG.class.getName());
 
     /**
      * Creates new form Principal
      */
-    public Jogador jogador;
+    
     public ArrayList<Equipamento> equipamentos; 
     public ArrayList<Monstro> monstros;
+    public Jogador jogador;
+    public Monstro m;
+    public DefaultListModel<Equipamento> inventarioTela;
     public SimuladorRPG() {
-        jogador = new Jogador();
-        jogador.setNivel(5);
-        
+        //<editor-fold>
         equipamentos = (ArrayList<Equipamento>) EquipamentoService.ObterEquipamentos();
         monstros = (ArrayList<Monstro>) MonstroService.ObterMonstros();
+        jogador = new Jogador();
+        jogador.setNome("Morsa");
+        jogador.setNivel(5);
+        jogador.setArmadura(equipamentos.get(4));
+        jogador.setCabeca(equipamentos.get(1));
+        jogador.setMao(equipamentos.get(10));
+        jogador.setItemGeral(equipamentos.get(19));
+        jogador.setCalcado(equipamentos.get(7));
+        
         initComponents();
+        //</editor-fold>
         
+        inventarioTela = new DefaultListModel<>() ;
         Random r = new Random();
+        inventarioLista.setModel(inventarioTela);
+        inventarioTela.addElement(equipamentos.get(r.nextInt(0,equipamentos.size())));
         
-// Pega um monstro específico do enum
-        Monstro m = monstros.get(r.nextInt(0,monstros.size()));
-
-        // Pega um equipamento
-       // EquipamentoEnum arma = EquipamentoEnum.MOTOSSERRA_DA_EVISCERACAO_SANGRENTA;
-       // EquipamentoEnum armadura = EquipamentoEnum.ARMADURA_DE_COURO_FALSO;
+      
 
         // Simula o status do jogador
+        infoJogador.setText(jogador.infoJogador());
+        equipamentosEquipados.setText("Equipamentos\n" +
+                                      "Cabeça:" + jogador.getCabeca().getNome()
+                                      + "\n" +
+                                      "Armadura:"+jogador.getArmadura().getNome()
+                                      + "\n" + 
+                                      "Calçado:"+jogador.getCalcado().getNome()
+                                      + "\n" + 
+                                      "Mãos:"+jogador.getMao().getNome());
         
-        
-        //int forcaJogador = jogador.getNivel() + arma.getBonus() + armadura.getBonus();
-
+       /*
         System.out.println("Você (Nível " + jogador.getNivel() + ") chuta a porta!");
         System.out.println("Aparece um " + m.getNome() + " de Nível " + m.getNivel() + "!");
         System.out.println("Sua força de combate total é: "  + jogador.getNivel());//
         System.out.println("A força do monstro é: " + m.getNivel());
-        
        if (jogador.getNivel() > m.getNivel()) {
             System.out.println("\nVITÓRIA! Você derrotou o monstro e pegou o tesouro!");
         } else {
             System.out.println("\nDERROTA! Você precisa fugir para não sofrer coisas ruins!");
         }
+        */
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,21 +86,162 @@ public class SimuladorRPG extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton3 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea2 = new javax.swing.JTextArea();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        inventarioLista = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        monstroInfo = new javax.swing.JTextArea();
+        equiparBtn = new javax.swing.JButton();
+        infoJogador = new javax.swing.JTextField();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        equipamentosEquipados = new javax.swing.JTextArea();
+        fugirBtn = new javax.swing.JButton();
+        Atacarbtn = new javax.swing.JButton();
+        abrirPortabtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+
+        jButton3.setText("jButton3");
+
+        jTextArea2.setColumns(20);
+        jTextArea2.setRows(5);
+        jScrollPane3.setViewportView(jTextArea2);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jScrollPane1.setViewportView(inventarioLista);
+
+        monstroInfo.setColumns(20);
+        monstroInfo.setRows(5);
+        jScrollPane2.setViewportView(monstroInfo);
+
+        equiparBtn.setText("Equipar");
+
+        infoJogador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoJogadorActionPerformed(evt);
+            }
+        });
+
+        equipamentosEquipados.setColumns(20);
+        equipamentosEquipados.setRows(5);
+        equipamentosEquipados.setText("Equipamentos\nCabeça: ---- \nArmadura: ---- \nCalçado: ---- \nMãos: -----");
+        equipamentosEquipados.setToolTipText("");
+        jScrollPane4.setViewportView(equipamentosEquipados);
+
+        fugirBtn.setText("Fugir");
+        fugirBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fugirBtnActionPerformed(evt);
+            }
+        });
+
+        Atacarbtn.setText("Atacar");
+        Atacarbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AtacarbtnActionPerformed(evt);
+            }
+        });
+
+        abrirPortabtn.setText("Abrir a Porta");
+        abrirPortabtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                abrirPortabtnActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Inventário");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(equiparBtn))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(75, 75, 75)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(infoJogador)
+                    .addComponent(jScrollPane4))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(131, 131, 131)
+                        .addComponent(abrirPortabtn))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(58, 58, 58)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(Atacarbtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(fugirBtn))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(40, 40, 40))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(infoJogador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane4)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(equiparBtn))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(abrirPortabtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Atacarbtn)
+                            .addComponent(fugirBtn))))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void infoJogadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoJogadorActionPerformed
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_infoJogadorActionPerformed
+
+    private void abrirPortabtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirPortabtnActionPerformed
+        // TODO add your handling code here:
+        Random r = new Random();
+         m = monstros.get(r.nextInt(0,monstros.size()));
+         monstroInfo.setText("Você (Nível " + jogador.getNivel() + ") chuta a porta!" + "\n"+ 
+                              "Aparece um " + m.getNome() + " de Nível " + m.getNivel() + "!" + "\n" +
+                               "Sua força de combate total é: "  + jogador.getPoder() +  "\n" +
+                               "A força do monstro é: " + m.getNivel());
+    }//GEN-LAST:event_abrirPortabtnActionPerformed
+
+    private void AtacarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AtacarbtnActionPerformed
+        if (jogador.getPoder()> m.getNivel()){
+            monstroInfo.setText("Parábens você venceu!");
+        } else {
+            monstroInfo.setText("Que pena você perdeu.");
+        }
+    }//GEN-LAST:event_AtacarbtnActionPerformed
+
+    private void fugirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fugirBtnActionPerformed
+        monstroInfo.setText("Você fugiu da luta");
+    }//GEN-LAST:event_fugirBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -114,5 +269,20 @@ public class SimuladorRPG extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Atacarbtn;
+    private javax.swing.JButton abrirPortabtn;
+    private javax.swing.JTextArea equipamentosEquipados;
+    private javax.swing.JButton equiparBtn;
+    private javax.swing.JButton fugirBtn;
+    private javax.swing.JTextField infoJogador;
+    private javax.swing.JList<Equipamento> inventarioLista;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTextArea jTextArea2;
+    private javax.swing.JTextArea monstroInfo;
     // End of variables declaration//GEN-END:variables
 }

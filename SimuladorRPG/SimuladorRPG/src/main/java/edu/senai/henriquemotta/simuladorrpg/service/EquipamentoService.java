@@ -20,7 +20,7 @@ public class EquipamentoService {
             Equipamento e = new Equipamento(); 
             e.setNome(item.getNome());
             e.setBonus(item.getBonus());
-            e.setTipo(e.getTipo());
+            e.setTipo(item.getTipo());
             equipamentos.add(e);
         }
         return equipamentos;
