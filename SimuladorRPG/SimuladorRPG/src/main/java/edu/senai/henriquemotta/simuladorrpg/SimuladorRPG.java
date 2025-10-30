@@ -30,6 +30,8 @@ public class SimuladorRPG extends javax.swing.JFrame {
     public Jogador jogador;
     public Monstro m;
     public DefaultListModel<Equipamento> inventarioTela;
+    public Random r = new Random(); 
+    public int contadorPorta =0;
     public SimuladorRPG() {
         //<editor-fold>
         equipamentos = (ArrayList<Equipamento>) EquipamentoService.ObterEquipamentos();
@@ -37,32 +39,23 @@ public class SimuladorRPG extends javax.swing.JFrame {
         jogador = new Jogador();
         jogador.setNome("Morsa");
         jogador.setNivel(5);
-        jogador.setArmadura(equipamentos.get(4));
-        jogador.setCabeca(equipamentos.get(1));
-        jogador.setMao(equipamentos.get(10));
-        jogador.setItemGeral(equipamentos.get(19));
-        jogador.setCalcado(equipamentos.get(7));
+
         
         initComponents();
         //</editor-fold>
         
         inventarioTela = new DefaultListModel<>() ;
-        Random r = new Random();
-        inventarioLista.setModel(inventarioTela);
-        inventarioTela.addElement(equipamentos.get(r.nextInt(0,equipamentos.size())));
         
-      
+        inventarioTela.addElement(equipamentos.get(r.nextInt(0,equipamentos.size())));
+        inventarioLista.setModel(inventarioTela);
+        
+        inventarioTela.addElement(equipamentos.get(r.nextInt(0,equipamentos.size())));
+        inventarioLista.setModel(inventarioTela);
+        
+        atualizarInfo();
 
         // Simula o status do jogador
-        infoJogador.setText(jogador.infoJogador());
-        equipamentosEquipados.setText("Equipamentos\n" +
-                                      "Cabeça:" + jogador.getCabeca().getNome()
-                                      + "\n" +
-                                      "Armadura:"+jogador.getArmadura().getNome()
-                                      + "\n" + 
-                                      "Calçado:"+jogador.getCalcado().getNome()
-                                      + "\n" + 
-                                      "Mãos:"+jogador.getMao().getNome());
+
         
        /*
         System.out.println("Você (Nível " + jogador.getNivel() + ") chuta a porta!");
@@ -117,6 +110,11 @@ public class SimuladorRPG extends javax.swing.JFrame {
         jScrollPane2.setViewportView(monstroInfo);
 
         equiparBtn.setText("Equipar");
+        equiparBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                equiparBtnActionPerformed(evt);
+            }
+        });
 
         infoJogador.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -160,15 +158,13 @@ public class SimuladorRPG extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addComponent(equiparBtn))
+                        .addGap(0, 8, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(75, 75, 75)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                        .addGap(127, 127, 127)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(infoJogador)
                     .addComponent(jScrollPane4))
@@ -185,6 +181,10 @@ public class SimuladorRPG extends javax.swing.JFrame {
                                 .addComponent(fugirBtn))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(40, 40, 40))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(114, 114, 114)
+                .addComponent(equiparBtn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,9 +198,7 @@ public class SimuladorRPG extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane4)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(equiparBtn))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addComponent(abrirPortabtn)
@@ -210,6 +208,8 @@ public class SimuladorRPG extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(Atacarbtn)
                             .addComponent(fugirBtn))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(equiparBtn)
                 .addContainerGap(28, Short.MAX_VALUE))
         );
 
@@ -220,29 +220,76 @@ public class SimuladorRPG extends javax.swing.JFrame {
         // TODO add your handling code here:
        
     }//GEN-LAST:event_infoJogadorActionPerformed
-
+    
+    private void atualizarInfo() {
+        infoJogador.setText(jogador.infoJogador());
+        equipamentosEquipados.setText("Equipamentos\n" +
+                                      "Cabeça:" + jogador.getCabeca()
+                                      + "\n" +
+                                      "Armadura:"+jogador.getArmadura()
+                                      + "\n" + 
+                                      "Calçado:"+jogador.getCalcado()
+                                      + "\n" + 
+                                      "Mãos:"+jogador.getMao());
+    }
     private void abrirPortabtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirPortabtnActionPerformed
         // TODO add your handling code here:
         Random r = new Random();
-         m = monstros.get(r.nextInt(0,monstros.size()));
-         monstroInfo.setText("Você (Nível " + jogador.getNivel() + ") chuta a porta!" + "\n"+ 
+        contadorPorta  ++;
+        if(contadorPorta == 1){
+        m = monstros.get(r.nextInt(0,monstros.size()));
+        monstroInfo.setText("Você (Nível " + jogador.getNivel() + ") chuta a porta!" + "\n"+ 
                               "Aparece um " + m.getNome() + " de Nível " + m.getNivel() + "!" + "\n" +
                                "Sua força de combate total é: "  + jogador.getPoder() +  "\n" +
                                "A força do monstro é: " + m.getNivel());
+    } 
+        if(contadorPorta >= 2) {
+        monstroInfo.append("\nA porta já foi aberta");
+     }
+         
     }//GEN-LAST:event_abrirPortabtnActionPerformed
 
     private void AtacarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AtacarbtnActionPerformed
         if (jogador.getPoder()> m.getNivel()){
-            monstroInfo.setText("Parábens você venceu!");
+            monstroInfo.setText("Boa !! você ganhou e descobriu o tesouro !!\n");
+            Equipamento e = equipamentos.get(r.nextInt(0,equipamentos.size()));
+            monstroInfo.append(e.toString());
+            jogador.setNivel(jogador.getNivel()+1);
+            inventarioTela.addElement(e);
         } else {
-            monstroInfo.setText("Que pena você perdeu.");
+            monstroInfo.setText("Que pena você perdeu. Ocasionando a perda de um nível\n");
+            monstroInfo.append("Nível Atual:" + jogador.getNivel());
+            jogador.setNivel(jogador.getNivel()-1);
         }
+        contadorPorta =0; 
+        atualizarInfo();
     }//GEN-LAST:event_AtacarbtnActionPerformed
 
     private void fugirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fugirBtnActionPerformed
-        monstroInfo.setText("Você fugiu da luta");
+       int chance = r.nextInt(0,10);
+        if (chance == 1) {
+           monstroInfo.setText("Você fugiu da luta");
+       } else {
+           monstroInfo.setText("Você não conseguiu fugir da luta");
+           jogador.setNivel(jogador.getNivel()-3);
+           
+       }
+        contadorPorta =0; 
     }//GEN-LAST:event_fugirBtnActionPerformed
 
+    private void equiparBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_equiparBtnActionPerformed
+        Equipamento selecionado = inventarioLista.getSelectedValue();
+        
+        switch (selecionado.getTipo()){
+            case ARMADURA -> jogador.setArmadura(selecionado);
+            case CABECAL -> jogador.setCabeca(selecionado);
+            case CALCADO -> jogador.setCalcado(selecionado);
+            case MAO -> jogador.setMao(selecionado);
+    }
+        atualizarInfo();
+        inventarioTela.remove(inventarioLista.getSelectedIndex());
+    }//GEN-LAST:event_equiparBtnActionPerformed
+    
     /**
      * @param args the command line arguments
      */

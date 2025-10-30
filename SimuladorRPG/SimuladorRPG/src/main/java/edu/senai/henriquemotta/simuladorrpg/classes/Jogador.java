@@ -18,6 +18,7 @@ public class Jogador {
     private Equipamento Mao;
     private Equipamento ItemGeral; 
     private List<Equipamento> inventario; 
+    private int poder;
     public String getNome() {
         return nome;
     }
@@ -104,13 +105,21 @@ public class Jogador {
     }
 
     public String infoJogador() {
+        
        return this.getNome() +  " Nível: " + this.getNivel()+ " Poder: " + this.getPoder();
     }
     
-    public int setPoder() {
-        return  this.getNivel() + this.getArmadura().getBonus() + this.getMao().getBonus();
-    }
     public int getPoder() {
-        return this.setPoder();
+        int resultado = nivel; 
+        if (armadura != null) {
+            resultado += armadura.getBonus();};
+        if (cabeca != null) {
+            resultado += cabeca.getBonus();};
+         if (Calcado != null) {
+             resultado += Calcado.getBonus();};
+         if (Mao != null ){
+             resultado += Mao.getBonus();};
+        this.poder = resultado;
+        return resultado;
     }
 }
