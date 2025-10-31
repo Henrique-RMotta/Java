@@ -11,10 +11,12 @@ import edu.senai.henriquemotta.simuladorrpg.classes.Jogador;
 import edu.senai.henriquemotta.simuladorrpg.classes.Monstro;
 import edu.senai.henriquemotta.simuladorrpg.service.EquipamentoService;
 import edu.senai.henriquemotta.simuladorrpg.service.MonstroService;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
         
 
 public class SimuladorRPG extends javax.swing.JFrame {
@@ -32,6 +34,7 @@ public class SimuladorRPG extends javax.swing.JFrame {
     public DefaultListModel<Equipamento> inventarioTela;
     public Random r = new Random(); 
     public int contadorPorta =0;
+    private Exception Exception;
     public SimuladorRPG() {
         //<editor-fold>
         equipamentos = (ArrayList<Equipamento>) EquipamentoService.ObterEquipamentos();
@@ -42,6 +45,7 @@ public class SimuladorRPG extends javax.swing.JFrame {
 
         
         initComponents();
+
         //</editor-fold>
         
         inventarioTela = new DefaultListModel<>() ;
@@ -234,7 +238,7 @@ public class SimuladorRPG extends javax.swing.JFrame {
     }
     private void abrirPortabtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirPortabtnActionPerformed
         // TODO add your handling code here:
-        Random r = new Random();
+ 
         contadorPorta  ++;
         if(contadorPorta == 1){
         m = monstros.get(r.nextInt(0,monstros.size()));
@@ -250,7 +254,8 @@ public class SimuladorRPG extends javax.swing.JFrame {
     }//GEN-LAST:event_abrirPortabtnActionPerformed
 
     private void AtacarbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AtacarbtnActionPerformed
-        if (jogador.getPoder()> m.getNivel()){
+        try {
+            if (jogador.getPoder()> m.getNivel()){
             monstroInfo.setText("Boa !! você ganhou e descobriu o tesouro !!\n");
             Equipamento e = equipamentos.get(r.nextInt(0,equipamentos.size()));
             monstroInfo.append(e.toString());
@@ -263,21 +268,36 @@ public class SimuladorRPG extends javax.swing.JFrame {
         }
         contadorPorta =0; 
         atualizarInfo();
+        } catch (Exception err){
+             JOptionPane.showMessageDialog(null, "Não é possivel atacar sem um monstro disponível",
+                   "Erro",JOptionPane.WARNING_MESSAGE);
+        }
+      
     }//GEN-LAST:event_AtacarbtnActionPerformed
 
     private void fugirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fugirBtnActionPerformed
        int chance = r.nextInt(0,10);
-        if (chance == 1) {
+       try{
+             if (m.getNome() == null) {
+               m.getNome();
+           }
+           if (chance == 1 && m.getNome() != null) {
            monstroInfo.setText("Você fugiu da luta");
+         
        } else {
            monstroInfo.setText("Você não conseguiu fugir da luta");
            jogador.setNivel(jogador.getNivel()-3);
            
        }
+       } catch (Exception err){
+           JOptionPane.showMessageDialog(null,"Não é possível fugir sem abrir a porta","Erro",JOptionPane.WARNING_MESSAGE);
+       }
+      
         contadorPorta =0; 
     }//GEN-LAST:event_fugirBtnActionPerformed
 
     private void equiparBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_equiparBtnActionPerformed
+        try {
         Equipamento selecionado = inventarioLista.getSelectedValue();
         
         switch (selecionado.getTipo()){
@@ -286,6 +306,11 @@ public class SimuladorRPG extends javax.swing.JFrame {
             case CALCADO -> jogador.setCalcado(selecionado);
             case MAO -> jogador.setMao(selecionado);
     }
+        } catch (NullPointerException err){
+            JOptionPane.showMessageDialog(null, "Não é possivel equipar, pois não há equipamentos selecionados ou disponívis","Erro",JOptionPane.WARNING_MESSAGE);
+        } catch (Exception err) {
+            JOptionPane.showMessageDialog(null, "Não é possivel equipar, pois não há equipamentos selecionados ou disponívis","Erro",JOptionPane.WARNING_MESSAGE);
+        }
         atualizarInfo();
         inventarioTela.remove(inventarioLista.getSelectedIndex());
     }//GEN-LAST:event_equiparBtnActionPerformed
@@ -312,7 +337,9 @@ public class SimuladorRPG extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new SimuladorRPG().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            new SimuladorRPG().setVisible(true);
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
