@@ -13,6 +13,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.math.Rectangle;
+import java.awt.*;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -33,7 +35,10 @@ public class Main extends ApplicationAdapter {
 
     Array<Sprite> dropSprites;
 
+    Rectangle bucketRectangle;
+    Rectangle dropRectangle;
     float dropTimer;
+
     @Override
     public void create() {
         // batch = new SpriteBatch();
@@ -54,7 +59,13 @@ public class Main extends ApplicationAdapter {
         touchPos= new Vector2();
 
         dropSprites = new Array<>();
-        createDroplet();
+
+        bucketRectangle = new Rectangle();
+        dropRectangle = new Rectangle();
+
+        music.setLooping(true);
+        music.setVolume(.5f);
+        music.play();
     }
 
     @Override
@@ -99,14 +110,22 @@ public class Main extends ApplicationAdapter {
 
         float delta = Gdx.graphics.getDeltaTime();
 
+        bucketRectangle.set(bucketSprite.getX(),
+            bucketSprite.getY(),
+            bucketWidth,
+            bucketHeight);
         for (int i = dropSprites.size - 1; i >= 0; i--) {
             Sprite dropSprite = dropSprites.get(i);
             float dropWidth = dropSprite.getWidth();
             float dropHeight = dropSprite.getHeight();
 
             dropSprite.translateY((-2f * delta));
-
+            dropRectangle.set(dropSprite.getX(),dropSprite.getY(),dropWidth,dropHeight);
             if(dropSprite.getY() < -dropHeight) dropSprites.removeIndex(i);
+            else if(bucketRectangle.overlaps(dropRectangle)){
+                dropSprites.removeIndex(i);
+                dropSound.play();
+            }
         }
         dropTimer += delta;
         if(dropTimer > 1f) {
@@ -127,6 +146,9 @@ public class Main extends ApplicationAdapter {
         spriteBatch.draw(backgroundTexture,0,0,worldWidth,wordHeight);
         bucketSprite.draw(spriteBatch);
 
+        for (Sprite dropSprite : dropSprites) {
+            dropSprite.draw(spriteBatch);
+        }
         spriteBatch.end();
 
     }
