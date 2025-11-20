@@ -6,7 +6,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -15,21 +14,24 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Rectangle;
-import senai.projeto.henriquemotta.tiro;
-import java.awt.*;
-import java.util.concurrent.TimeUnit;
+import senai.projeto.henriquemotta.classes.Monstro;
+import senai.projeto.henriquemotta.classes.tiro;
+import senai.projeto.henriquemotta.services.monstroService;
+
+import java.util.ArrayList;
+
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     Texture planoDeFundoTexture;
     Texture persoTexture;
     Texture inimigoTexture;
     Texture tiroTexture;
-
     Sound tiroSom;
     Music music;
 
+
     SpriteBatch spriteBatch;
- 
+
     FitViewport viewport;
 
     Sprite persoSprite;
@@ -42,8 +44,15 @@ public class Main extends ApplicationAdapter {
     Rectangle tiroHitBox;
     Array<tiro> tiros;
     float Timer;
-
+    int vidaMax = 5;
     int vidaPerso =5;
+    Texture fogoArma;
+
+    float fireCooldown = 0.15f; // 150ms entre cada tiro
+    float fireTimer = 0;
+
+    public Monstro m;
+    public ArrayList<Monstro> monstros;
     @Override
     public void create() {
         planoDeFundoTexture = new Texture("background.png");
@@ -53,7 +62,7 @@ public class Main extends ApplicationAdapter {
         persoSprite = new Sprite(persoTexture);
         persoSprite.setSize(1,1);
         persoHitBox = new Rectangle();
-
+        fogoArma = new Texture("foguinho.png");
         inimigosSprite = new Array<>();
         inimigoTexture = new Texture("inimigo.png");
         inimigosHitBox = new Rectangle();
@@ -61,9 +70,8 @@ public class Main extends ApplicationAdapter {
         tiros = new Array<>();
         tiroTexture = new Texture("tiro.png");
         tiroHitBox = new Rectangle();
+
     }
-
-
     @Override
     public void resize(int width, int height) {
         viewport.update(width,height,true);
@@ -78,7 +86,7 @@ public class Main extends ApplicationAdapter {
     private void input() {
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
-
+        persoSprite.setTexture(persoTexture);
         if(Gdx.input.isKeyPressed(Input.Keys.D)){
             persoSprite.translateX(speed * delta);
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)){
@@ -89,8 +97,11 @@ public class Main extends ApplicationAdapter {
             persoSprite.translateY(-speed * delta);
         }
         Timer += delta;
-        if(Gdx.input.isTouched()){
+        fireTimer += Gdx.graphics.getDeltaTime();
+        if(Gdx.input.isTouched() && fireTimer >= fireCooldown){
                 createTiros();
+                persoSprite.setTexture(fogoArma);
+            fireTimer = 0; // reseta o contador
         }
     }
 
@@ -112,12 +123,9 @@ public class Main extends ApplicationAdapter {
             float inimigoHeight = inimigoSprite.getHeight();
 
             inimigoSprite.translateY((-2f * delta));
-            inimigosHitBox.set(inimigoSprite.getX(),inimigoSprite.getY(),inimigoWidth,inimigoHeight);
-            System.out.println(vidaPerso);
-            if(inimigoSprite.getY() < - inimigoHeight) inimigosSprite.removeIndex(i);
-            else if(inimigosHitBox.overlaps(tiroHitBox)){
-                    inimigosSprite.removeIndex(i);
-            } else if (persoHitBox.overlaps(inimigosHitBox)){
+            inimigosHitBox.set(inimigoSprite.getX(), inimigoSprite.getY(), inimigoWidth, inimigoHeight);
+            if (inimigoSprite.getY() < -inimigoHeight) inimigosSprite.removeIndex(i);
+            else if (persoHitBox.overlaps(inimigosHitBox)){
                 inimigosSprite.removeIndex(i);
                 vidaPerso --;
                 if(vidaPerso == 0) {
@@ -125,7 +133,17 @@ public class Main extends ApplicationAdapter {
                     vidaPerso = 5;
                 }
             }
+            for (int t = tiros.size - 1; t >= 0; t--) {
+                tiro tiro = tiros.get(t);
+                tiro.hitbox.set(tiro.sprite.getX(), tiro.sprite.getY(),
+                    tiro.sprite.getWidth(), tiro.sprite.getHeight());
 
+                if (inimigosHitBox.overlaps(tiro.hitbox)) {
+                    inimigosSprite.removeIndex(i);
+                    tiros.removeIndex(t);
+                    break; // sai do loop de tiros
+                }
+            }
         }
 
         for(int i = tiros.size -1; i>=0; i--) {
@@ -134,6 +152,7 @@ public class Main extends ApplicationAdapter {
             tiro.sprite.translateY((5f * delta));
             if(tiro.sprite.getY() >= worldHeight) tiros.removeIndex(i);
             tiroHitBox.set(tiro.sprite.getX(),tiro.sprite.getY(),tiro.sprite.getWidth(),tiro.sprite.getHeight());
+
         }
         Timer += delta;
         if(Timer > 1f) {
@@ -151,6 +170,7 @@ public class Main extends ApplicationAdapter {
         float worldWidth = viewport.getWorldWidth();
         float wordHeight = viewport.getWorldHeight();
 
+
         spriteBatch.draw(planoDeFundoTexture,0,0,worldWidth,wordHeight);
         persoSprite.draw(spriteBatch);
 
@@ -161,22 +181,30 @@ public class Main extends ApplicationAdapter {
         for (tiro tiro : tiros) {
             tiro.sprite.draw(spriteBatch);
         }
+        drawLifeBar(spriteBatch);
         spriteBatch.end();
 
     }
 
     private void createInimigos() {
-        float inimigoWidth =1;
-        float inimigoHeight =1;
+            float inimigoWidth =1;
+            float inimigoHeight =1;
 
-        float worldWidth = viewport.getWorldWidth();
-        float worldHeight = viewport.getWorldHeight();
+            float worldWidth = viewport.getWorldWidth();
+            float worldHeight = viewport.getWorldHeight();
 
-        Sprite inimigoSprite = new Sprite(inimigoTexture);
-        inimigoSprite.setSize(inimigoWidth,inimigoHeight);
-        inimigoSprite.setX(MathUtils.random(0f, worldHeight - inimigoWidth));
-        inimigoSprite.setY(worldHeight);
-        inimigosSprite.add(inimigoSprite);
+            monstros = (ArrayList<Monstro>) monstroService.ObterMonstros();
+            m = monstros.get(MathUtils.random(0,monstros.size()-1));
+            Sprite inimigoSprite = new Sprite(m.getTexturaMonstro());
+
+            m.setSprite(inimigoSprite);
+            m.setVidaMonstro(m.getVidaMonstro());
+            inimigoSprite.setSize(inimigoWidth,inimigoHeight);
+            inimigoSprite.setX(MathUtils.random(0f, worldHeight - inimigoWidth));
+            inimigoSprite.setY(worldHeight);
+            inimigosSprite.add(m.getSprite());
+
+
     }
 
     private void createTiros() {
@@ -188,6 +216,32 @@ public class Main extends ApplicationAdapter {
         tiroSprite.setX(persoSprite.getX());
         tiroSprite.setY(persoSprite.getY()+1);
         tiros.add(new tiro(tiroSprite));
+    }
+
+    private void drawLifeBar(SpriteBatch batch) {
+        float x = 0.5f;        // posição X no mundo
+        float y = 7.5f;        // posição Y no topo
+        float width = 3f;      // largura total
+        float height = 0.3f;   // altura da barra
+
+        // Porcentagem da vida
+        float percent = (float) vidaPerso / vidaMax;
+
+        // Fundo da barra (cinza escuro)
+        batch.setColor(Color.DARK_GRAY);
+        batch.draw(planoDeFundoTexture, x, y, width, height);
+
+        // Barra cheia proporcional (verde → amarelo → vermelho)
+        Color color;
+        if (percent > 0.6f) color = Color.GREEN;
+        else if (percent > 0.3f) color = Color.YELLOW;
+        else color = Color.RED;
+
+        batch.setColor(color);
+        batch.draw(planoDeFundoTexture, x, y, width * percent, height);
+
+        // Resetar cor para evitar bugs
+        batch.setColor(Color.WHITE);
     }
 
 

@@ -1,13 +1,13 @@
-package senai.projeto.henriquemotta;
+package senai.projeto.henriquemotta.classes;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 
 public class tiro {
-    Sprite sprite;
-    Rectangle hitbox;
+    public Sprite sprite;
+    public Rectangle hitbox;
 
-    tiro(Sprite sprite) {
+    public tiro(Sprite sprite) {
         this.sprite = sprite;
         this.hitbox = new Rectangle(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
     }
