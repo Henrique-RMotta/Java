@@ -14,16 +14,18 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Rectangle;
+import senai.projeto.henriquemotta.classes.Equipamento;
 import senai.projeto.henriquemotta.classes.Monstro;
 import senai.projeto.henriquemotta.classes.tiro;
+import senai.projeto.henriquemotta.services.equipamentoService;
 import senai.projeto.henriquemotta.services.monstroService;
-
+import senai.projeto.henriquemotta.classes.Slayer;
+import senai.projeto.henriquemotta.services.equipamentoService;
 import java.util.ArrayList;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     Texture planoDeFundoTexture;
-    Texture persoTexture;
     Texture inimigoTexture;
     Texture tiroTexture;
     Sound tiroSom;
@@ -34,36 +36,31 @@ public class Main extends ApplicationAdapter {
 
     FitViewport viewport;
 
-    Sprite persoSprite;
-
     Vector2 touchPos;
 
-    Array<Sprite> inimigosSprite;
-    Rectangle persoHitBox;
+    Array<Monstro> inimigos;
     Rectangle inimigosHitBox;
     Rectangle tiroHitBox;
     Array<tiro> tiros;
-    float Timer;
-    int vidaMax = 5;
-    int vidaPerso =5;
+    ArrayList<Equipamento> Equipamentos;
+    float Timer;;
     Texture fogoArma;
 
-    float fireCooldown = 0.15f; // 150ms entre cada tiro
     float fireTimer = 0;
-
-    public Monstro m;
+    public Slayer slayer = new Slayer();
     public ArrayList<Monstro> monstros;
     @Override
     public void create() {
         planoDeFundoTexture = new Texture("background.png");
-        persoTexture = new Texture("carro.png");
+        slayer.setTexturaSlayer(new Texture ("carro.png"));
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(8,8);
-        persoSprite = new Sprite(persoTexture);
-        persoSprite.setSize(1,1);
-        persoHitBox = new Rectangle();
+        slayer.setSlayerSprite(new Sprite (slayer.getTexturaSlayer()));
+        slayer.getSlayerSprite().setSize(1,1);
+        slayer.setSlayerHitBox(new Rectangle());
+        slayer.setVidaSlayer(5);
         fogoArma = new Texture("foguinho.png");
-        inimigosSprite = new Array<>();
+        inimigos = new Array<>();
         inimigoTexture = new Texture("inimigo.png");
         inimigosHitBox = new Rectangle();
 
@@ -71,6 +68,10 @@ public class Main extends ApplicationAdapter {
         tiroTexture = new Texture("tiro.png");
         tiroHitBox = new Rectangle();
 
+        Equipamentos = new ArrayList<>();
+        Equipamentos = (ArrayList<Equipamento>) equipamentoService.ObterEquipamentos();
+        slayer.setDanoSlayer(Equipamentos.get(MathUtils.random(0, Equipamentos.size()-1)).getDanoEquip());
+        slayer.setArma(Equipamentos.get(MathUtils.random(0,Equipamentos.size()-1)));
     }
     @Override
     public void resize(int width, int height) {
@@ -86,21 +87,21 @@ public class Main extends ApplicationAdapter {
     private void input() {
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
-        persoSprite.setTexture(persoTexture);
+        slayer.getSlayerSprite().setTexture(slayer.getTexturaSlayer());
         if(Gdx.input.isKeyPressed(Input.Keys.D)){
-            persoSprite.translateX(speed * delta);
+            slayer.getSlayerSprite().translateX(speed * delta);
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)){
-            persoSprite.translateX(-speed * delta );
+            slayer.getSlayerSprite().translateX(-speed * delta );
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)){
-            persoSprite.translateY(speed * delta);
+            slayer.getSlayerSprite().translateY(speed * delta);
         }else if (Gdx.input.isKeyPressed(Input.Keys.S)){
-            persoSprite.translateY(-speed * delta);
+            slayer.getSlayerSprite().translateY(-speed * delta);
         }
         Timer += delta;
         fireTimer += Gdx.graphics.getDeltaTime();
-        if(Gdx.input.isTouched() && fireTimer >= fireCooldown){
+        if(Gdx.input.isTouched() && fireTimer >= slayer.getArma().getFireCooldown()){
                 createTiros();
-                persoSprite.setTexture(fogoArma);
+                slayer.getSlayerSprite().setTexture(fogoArma);
             fireTimer = 0; // reseta o contador
         }
     }
@@ -109,28 +110,27 @@ public class Main extends ApplicationAdapter {
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
 
-        float persoWidth = persoSprite.getWidth();
-        float persoHeight = persoSprite.getHeight();
-        persoSprite.setX(MathUtils.clamp(persoSprite.getX(),0,worldWidth - persoWidth));
-        persoSprite.setY(MathUtils.clamp(persoSprite.getY(),0,worldHeight - persoHeight));
+        float persoWidth = slayer.getSlayerSprite().getWidth();
+        float persoHeight = slayer.getSlayerSprite().getHeight();
+        slayer.getSlayerSprite().setX(MathUtils.clamp(slayer.getSlayerSprite().getX(),0,worldWidth - persoWidth));
+        slayer.getSlayerSprite().setY(MathUtils.clamp(slayer.getSlayerSprite().getY(),0,worldHeight - persoHeight));
         float delta = Gdx.graphics.getDeltaTime();
-
-        persoHitBox.set(persoSprite.getX(),persoSprite.getY(),persoWidth,persoHeight);
-
-        for(int i = inimigosSprite.size -1; i>=0 ; i--) {
-            Sprite inimigoSprite = inimigosSprite.get(i);
+        System.out.println("Arma:" + slayer.getArma() + "Dano:" + slayer.getDanoSlayer());
+        slayer.getSlayerHitBox().set(slayer.getSlayerSprite().getX(),slayer.getSlayerSprite().getY(),persoWidth,persoHeight);
+        for(int i = inimigos.size -1; i>=0 ; i--) {
+            Monstro monstroAtual = inimigos.get(i);
+            Sprite inimigoSprite = monstroAtual.getSprite();
             float inimigoWidth = inimigoSprite.getWidth();
             float inimigoHeight = inimigoSprite.getHeight();
-
-            inimigoSprite.translateY((-2f * delta));
+            inimigoSprite.translateY((-monstroAtual.getVelocidade() * delta));
             inimigosHitBox.set(inimigoSprite.getX(), inimigoSprite.getY(), inimigoWidth, inimigoHeight);
-            if (inimigoSprite.getY() < -inimigoHeight) inimigosSprite.removeIndex(i);
-            else if (persoHitBox.overlaps(inimigosHitBox)){
-                inimigosSprite.removeIndex(i);
-                vidaPerso --;
-                if(vidaPerso == 0) {
-                   persoSprite.setPosition(0,0);
-                    vidaPerso = 5;
+            if (inimigoSprite.getY() < -inimigoHeight) inimigos.removeIndex(i);
+            else if (slayer.getSlayerHitBox().overlaps(inimigosHitBox)){
+                inimigos.removeIndex(i);
+                slayer.setVidaSlayer(slayer.getVidaSlayer()-1);
+                if(slayer.getVidaSlayer() == 0) {
+                   slayer.getSlayerSprite().setPosition(0,0);
+                    slayer.setVidaSlayer(5);
                 }
             }
             for (int t = tiros.size - 1; t >= 0; t--) {
@@ -139,8 +139,13 @@ public class Main extends ApplicationAdapter {
                     tiro.sprite.getWidth(), tiro.sprite.getHeight());
 
                 if (inimigosHitBox.overlaps(tiro.hitbox)) {
-                    inimigosSprite.removeIndex(i);
                     tiros.removeIndex(t);
+                    monstroAtual.setVidaMonstro(monstroAtual.getVidaMonstro() - slayer.getDanoSlayer());
+                    if(monstroAtual.getVidaMonstro() <= 0) {
+                        inimigos.removeIndex(i);
+                    }
+
+
                     break; // sai do loop de tiros
                 }
             }
@@ -172,10 +177,10 @@ public class Main extends ApplicationAdapter {
 
 
         spriteBatch.draw(planoDeFundoTexture,0,0,worldWidth,wordHeight);
-        persoSprite.draw(spriteBatch);
+        slayer.getSlayerSprite().draw(spriteBatch);
 
-        for (Sprite inimigoSprite : inimigosSprite){
-            inimigoSprite.draw(spriteBatch);
+        for (Monstro monstros : inimigos){
+            monstros.getSprite().draw(spriteBatch);
         }
 
         for (tiro tiro : tiros) {
@@ -194,15 +199,13 @@ public class Main extends ApplicationAdapter {
             float worldHeight = viewport.getWorldHeight();
 
             monstros = (ArrayList<Monstro>) monstroService.ObterMonstros();
-            m = monstros.get(MathUtils.random(0,monstros.size()-1));
-            Sprite inimigoSprite = new Sprite(m.getTexturaMonstro());
-
-            m.setSprite(inimigoSprite);
-            m.setVidaMonstro(m.getVidaMonstro());
+            Monstro novoMonstro = monstros.get(MathUtils.random(0,monstros.size()-1));
+            Sprite inimigoSprite = new Sprite(novoMonstro.getTexturaMonstro());
+            novoMonstro.setSprite(inimigoSprite);
             inimigoSprite.setSize(inimigoWidth,inimigoHeight);
             inimigoSprite.setX(MathUtils.random(0f, worldHeight - inimigoWidth));
             inimigoSprite.setY(worldHeight);
-            inimigosSprite.add(m.getSprite());
+            inimigos.add(novoMonstro);
 
 
     }
@@ -213,8 +216,8 @@ public class Main extends ApplicationAdapter {
 
         Sprite tiroSprite = new Sprite(tiroTexture);
         tiroSprite.setSize(1,1);
-        tiroSprite.setX(persoSprite.getX());
-        tiroSprite.setY(persoSprite.getY()+1);
+        tiroSprite.setX(slayer.getSlayerSprite().getX());
+        tiroSprite.setY(slayer.getSlayerSprite().getY()+1);
         tiros.add(new tiro(tiroSprite));
     }
 
@@ -225,7 +228,7 @@ public class Main extends ApplicationAdapter {
         float height = 0.3f;   // altura da barra
 
         // Porcentagem da vida
-        float percent = (float) vidaPerso / vidaMax;
+        float percent = (float) slayer.getVidaSlayer() / 5;
 
         // Fundo da barra (cinza escuro)
         batch.setColor(Color.DARK_GRAY);

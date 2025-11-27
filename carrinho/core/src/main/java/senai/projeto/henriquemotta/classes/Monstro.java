@@ -8,9 +8,9 @@ public class Monstro {
     private float vidaMonstro;
     private String nomeMonstro;
     private Texture texturaMonstro;
-
     public Sprite sprite;
     public Rectangle hitbox;
+    private float velocidade;
 
     public Sprite getSprite() {
         return sprite;
@@ -44,5 +44,11 @@ public class Monstro {
         this.vidaMonstro = vidaMonstro;
     }
 
+    public float getVelocidade() {
+        return velocidade;
+    }
 
+    public void setVelocidade(float velocidade) {
+        this.velocidade = velocidade;
+    }
 }

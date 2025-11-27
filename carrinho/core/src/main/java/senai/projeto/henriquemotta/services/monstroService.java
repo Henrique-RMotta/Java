@@ -13,6 +13,7 @@ public class monstroService {
             m.setVidaMonstro(monstro.getVida());
             m.setTexturaMonstro(monstro.getTextura());
             m.setNomeMonstro(monstro.getNome());
+            m.setVelocidade(monstro.getVelocidade());
             monstros.add(m);
         }
         return monstros;
