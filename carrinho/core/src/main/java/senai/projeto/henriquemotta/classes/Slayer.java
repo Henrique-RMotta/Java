@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Slayer {
     private float vidaSlayer;
-    private float danoSlayer;
     private Equipamento arma;
     private Texture texturaSlayer;
     private Sprite slayerSprite;
@@ -44,16 +43,10 @@ public class Slayer {
     }
 
     public void setVidaSlayer(float vidaSlayer) {
-        this.vidaSlayer = vidaSlayer;
+            this.vidaSlayer = vidaSlayer;
     }
 
-    public float getDanoSlayer() {
-        return danoSlayer;
-    }
 
-    public void setDanoSlayer(float danoSlayer) {
-        this.danoSlayer = danoSlayer;
-    }
 
     public Texture getTexturaSlayer() {
         return texturaSlayer;

@@ -22,9 +22,6 @@ public class Equipamento {
         this.texturaEquip = texturaEquip;
     }
 
-    public Texture getTexturaEquip() {
-        return texturaEquip;
-    }
 
     public float getFireCooldown() {
         return fireCooldown;
