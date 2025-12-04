@@ -81,6 +81,10 @@ public class Main extends ApplicationAdapter {
         music.setLooping(true);
         music.setVolume(.5f);
         music.play();
+
+        Rodada = new Rodada(); // Instancia
+        Rodada.setRodada(1);   // Define explicitamente rodada 1
+        Rodada.setNumInimigos(10); // Define quantos inimigos começam na rodada 1
     }
     @Override
     public void resize(int width, int height) {
@@ -107,14 +111,19 @@ public class Main extends ApplicationAdapter {
             slayer.getSlayerSprite().translateY(-speed * delta);
         }else if (Gdx.input.isKeyPressed(Input.Keys.Z)){
             slayer.setArma(Equipamentos.get(0));
+            slayer.setTexturaSlayer(Equipamentos.get(0).getTextura());
         }else if (Gdx.input.isKeyPressed(Input.Keys.X)){
             slayer.setArma(Equipamentos.get(1));
+            slayer.setTexturaSlayer(Equipamentos.get(1).getTextura());
         }else if (Gdx.input.isKeyPressed(Input.Keys.C)){
             slayer.setArma(Equipamentos.get(2));
+            slayer.setTexturaSlayer(Equipamentos.get(2).getTextura());
         }else if (Gdx.input.isKeyPressed(Input.Keys.V)){
             slayer.setArma(Equipamentos.get(3));
+            slayer.setTexturaSlayer(Equipamentos.get(3).getTextura());
         }else if (Gdx.input.isKeyPressed(Input.Keys.B)) {
             slayer.setArma(Equipamentos.get(4));
+            slayer.setTexturaSlayer(Equipamentos.get(4).getTextura());
         }
         Timer += delta;
         fireTimer += Gdx.graphics.getDeltaTime();
@@ -152,7 +161,8 @@ public class Main extends ApplicationAdapter {
                 slayer.setVidaSlayer(slayer.getVidaSlayer()-1);
                 numInimigos--;
                 if(slayer.getVidaSlayer() == 0) {
-                    numRodadas =1;
+                    Rodada.setRodada(1);
+                    Rodada.setNumInimigos(10);
                    slayer.getSlayerSprite().setPosition(0,0);
                     slayer.setVidaSlayer(5);
                 }
@@ -202,11 +212,10 @@ public class Main extends ApplicationAdapter {
         System.out.println(numInimigos);
         if (numInimigos == numInimigosRodada) {
             if (Timer >= 10f) {
-                Rodada.setNumInimigos(numRodadas * numInimigosRodada);
                 Rodada.setRodada(numRodadas + 1);
+                Rodada.setNumInimigos(numRodadas * numInimigosRodada);
                 numInimigos = 0;
                 Timer = 0;
-                slayer.setArma(Equipamentos.get(MathUtils.random(0, Equipamentos.size()-1)));
             }
         }
 

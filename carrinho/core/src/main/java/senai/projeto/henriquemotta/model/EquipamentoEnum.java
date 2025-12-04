@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public enum EquipamentoEnum {
 
-    SUPER_SHOTGUN(90, "super_shotgun.png", 0.65f),     // forte, recarga lenta
+    SUPER_SHOTGUN(90, "carro.png", 0.65f),     // forte, recarga lenta
     BALISTA(100, "balista.png", 0.75f),                // dano alto, recarga ainda maior
     ROCKET_LAUNCHER(120, "rocket_launcher.png", 1.0f), // tiro mais forte → cooldown alto
     PLASMA_RIFLE(60, "plasma_rifle.png", 0.20f),       // rápida e fraca

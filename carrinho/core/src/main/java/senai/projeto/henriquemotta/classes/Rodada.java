@@ -1,8 +1,8 @@
 package senai.projeto.henriquemotta.classes;
 
 public class Rodada {
-    private int rodada = 1;
-    private int numInimigos = 10;
+    private int rodada;
+    private int numInimigos;
 
     public int getRodada() {
         return rodada;
