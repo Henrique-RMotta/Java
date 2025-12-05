@@ -1,11 +1,13 @@
 package senai.projeto.henriquemotta.classes;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Equipamento {
     private int danoEquip;
     private Texture texturaEquip;
     private float fireCooldown;
+    private String tiroSom;
     public int getDanoEquip() {
         return danoEquip;
     }
@@ -22,6 +24,13 @@ public class Equipamento {
         this.texturaEquip = texturaEquip;
     }
 
+    public String getTiroSom() {
+        return tiroSom;
+    }
+
+    public void setTiroSom(String tiroSom) {
+        this.tiroSom = tiroSom;
+    }
 
     public float getFireCooldown() {
         return fireCooldown;

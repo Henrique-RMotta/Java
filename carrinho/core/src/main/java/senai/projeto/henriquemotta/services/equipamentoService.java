@@ -14,6 +14,7 @@ public class equipamentoService {
                 e.setDanoEquip(equipamento.getDano());
                 e.setTexturaEquip(equipamento.getTextura());
                 e.setFireCooldown(equipamento.getFireCooldown());
+                e.setTiroSom(equipamento.getTiroSom());
                 equipamentos.add(e);
             }
             return equipamentos;

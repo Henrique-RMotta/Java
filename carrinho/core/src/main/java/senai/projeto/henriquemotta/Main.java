@@ -26,15 +26,10 @@ public class Main extends ApplicationAdapter {
     Texture planoDeFundoTexture;
     Texture inimigoTexture;
     Texture tiroTexture;
-    Sound tiroSom;
     Music music;
-
     int numInimigos = 0;
     SpriteBatch spriteBatch;
-
     FitViewport viewport;
-
-
     Array<Monstro> inimigos;
     Rectangle inimigosHitBox;
     Rectangle tiroHitBox;
@@ -202,11 +197,13 @@ public class Main extends ApplicationAdapter {
         System.out.println(numInimigosRodada);
         System.out.println(numRodadas);
         Timer += delta;
+        float valorTimer = 1f;
         if (numInimigos < numInimigosRodada) {
-            if (Timer >= 1f) {
+            if (Timer >= valorTimer) {
                 createInimigos();
                 numInimigos++;
                 Timer = 0;
+                valorTimer = valorTimer - 0.1f;
             }
         }
         System.out.println(numInimigos);
