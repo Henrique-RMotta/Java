@@ -74,7 +74,7 @@ public class Main extends ApplicationAdapter {
         font.getData().setScale(0.1f);
 
         music.setLooping(true);
-        music.setVolume(.5f);
+        music.setVolume(.2f);
         music.play();
 
         Rodada = new Rodada(); // Instancia
