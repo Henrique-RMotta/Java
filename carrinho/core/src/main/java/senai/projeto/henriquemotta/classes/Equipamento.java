@@ -7,7 +7,6 @@ public class Equipamento {
     private int danoEquip;
     private Texture texturaEquip;
     private float fireCooldown;
-    private String tiroSom;
     public int getDanoEquip() {
         return danoEquip;
     }
@@ -22,14 +21,6 @@ public class Equipamento {
 
     public void setTexturaEquip(Texture texturaEquip) {
         this.texturaEquip = texturaEquip;
-    }
-
-    public String getTiroSom() {
-        return tiroSom;
-    }
-
-    public void setTiroSom(String tiroSom) {
-        this.tiroSom = tiroSom;
     }
 
     public float getFireCooldown() {
